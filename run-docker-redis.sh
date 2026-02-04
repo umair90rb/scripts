@@ -10,7 +10,7 @@ echo "🚀 Deploying Redis (single-file script)..."
 # Redis
 REDIS_CONTAINER="redis"
 REDIS_IMAGE="redis:7"
-REDIS_PASSWORD="SuperSecurePassword@2026!"
+REDIS_NETWORK="my_network"
 
 # =============================
 # Pull latest images
@@ -43,8 +43,9 @@ docker run -d \
   --name $REDIS_CONTAINER \
   --restart unless-stopped \
   -p 6379:6379 \
+  -n $REDIS_NETWORK \
   $REDIS_IMAGE \
-  redis-server --requirepass $REDIS_PASSWORD
+  redis-server \
 
 # =============================
 # Status check
