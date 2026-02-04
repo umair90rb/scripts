@@ -55,10 +55,14 @@ else
   echo "Added ubuntu user to docker group."
   echo "⚠️ Logout & login again for docker group to take effect."
 fi
-####################################
-# Create Docker Volume
-####################################
-docker volume create $DATA_VOLUME >/dev/null 2>&1 || true
+
+# =============================
+# Ensure MongoDB volume exists
+# =============================
+if ! docker volume inspect $DATA_VOLUME >/dev/null 2>&1; then
+  echo "📁 Creating MongoDB volume..."
+  docker volume create $DATA_VOLUME >/dev/null 2>&1 || true
+fi
 
 ####################################
 # Create Keyfile
