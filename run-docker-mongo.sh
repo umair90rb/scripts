@@ -72,7 +72,7 @@ sudo rm -rf $KEY_DIR
 sudo mkdir -p $KEY_DIR
 openssl rand -base64 756 | sudo tee $KEY_FILE >/dev/null
 sudo chmod 400 $KEY_FILE
-sudo chown root:root $KEY_FILE
+sudo chown 999:999 $KEY_FILE
 
 ####################################
 # Remove Old Container
