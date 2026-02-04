@@ -95,7 +95,7 @@ docker run -d \
   -e MONGO_INITDB_ROOT_PASSWORD=$MONGO_PASS \
   mongo:7.0 \
   --replSet $REPLSET_NAME \
-  --keyFile /etc/mongo-key/mongodb.key \
+  --keyFile /etc/mongodb.key \
   --bind_ip_all
 
 ####################################
