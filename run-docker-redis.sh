@@ -43,7 +43,7 @@ docker run -d \
   --name $REDIS_CONTAINER \
   --restart unless-stopped \
   -p 6379:6379 \
-  -n $REDIS_NETWORK \
+  --network $REDIS_NETWORK \
   $REDIS_IMAGE \
   redis-server \
 
