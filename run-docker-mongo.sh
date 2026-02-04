@@ -89,7 +89,8 @@ docker run -d \
   --restart unless-stopped \
   -p $MONGO_PORT:27017 \
   -v $DATA_VOLUME:/data/db \
-  -v $KEY_FILE:/etc/mongodb-keyfile:ro \
+  -v $KEY_FILE:/etc/mongodb.key:ro \
+  
   -e MONGO_INITDB_ROOT_USERNAME=$MONGO_USER \
   -e MONGO_INITDB_ROOT_PASSWORD=$MONGO_PASS \
   mongo:7.0 \
