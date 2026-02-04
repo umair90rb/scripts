@@ -33,14 +33,14 @@ docker pull $REDIS_IMAGE
 echo "🛑 Stopping existing containers..."
 for c in $MONGO_CONTAINER $REDIS_CONTAINER; do
   if docker ps -q -f name=^${c}$ >/dev/null; then
-    docker stop $c
+    docker stop $c 2>/dev/null || true
   fi
 done
 
 echo "🗑 Removing old containers (volumes preserved)..."
 for c in $MONGO_CONTAINER $REDIS_CONTAINER; do
   if docker ps -aq -f name=^${c}$ >/dev/null; then
-    docker rm $c | true
+    docker rm $c 2>/dev/null || true
   fi
 done
 
