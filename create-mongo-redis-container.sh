@@ -40,7 +40,7 @@ done
 echo "🗑 Removing old containers (volumes preserved)..."
 for c in $MONGO_CONTAINER $REDIS_CONTAINER; do
   if docker ps -aq -f name=^${c}$ >/dev/null; then
-    docker rm $c
+    docker rm $c | true
   fi
 done
 
