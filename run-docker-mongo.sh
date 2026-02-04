@@ -17,7 +17,7 @@ MONGO_PORT=27017
 # Replica IP Mode
 ####################################
 
-USE_PUBLIC_IP_FOR_REPLICA=true   # change to false if app+db on same EC2
+USE_PUBLIC_IP_FOR_REPLICA=false   # change to false if app+db on same EC2
 
 PUBLIC_IP=$(curl -s http://checkip.amazonaws.com)
 
@@ -90,7 +90,6 @@ docker run -d \
   -p $MONGO_PORT:27017 \
   -v $DATA_VOLUME:/data/db \
   -v $KEY_FILE:/etc/mongodb.key:ro \
-  
   -e MONGO_INITDB_ROOT_USERNAME=$MONGO_USER \
   -e MONGO_INITDB_ROOT_PASSWORD=$MONGO_PASS \
   mongo:7.0 \
