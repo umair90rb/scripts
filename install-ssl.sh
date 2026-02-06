@@ -1,55 +1,56 @@
 #!/bin/bash
 
 # ==========================
-# CONFIGURATION
+# REQUIRED VARIABLES
 # ==========================
-DOMAIN="staging.covisionperformance.com"
-EMAIL="admin@$DOMAIN"
+DOMAIN=staging.covisionperformance.com
+PUBLIC_IP=16.58.89.9
+EMAIL=admin@$DOMAIN
 
-# ==========================
-# CHECK ROOT
-# ==========================
-if [ "$EUID" -ne 0 ]; then
-  echo "❌ Please run as root (use sudo)"
+if [[ -z "$DOMAIN" || -z "$PUBLIC_IP" || -z "$EMAIL" ]]; then
+  echo "❌ DOMAIN, PUBLIC_IP, or EMAIL missing in env file"
   exit 1
 fi
 
-echo "🚀 Starting SSL setup for $DOMAIN"
+echo "🚀 Applying SSL for $DOMAIN (IP: $PUBLIC_IP)"
 
 # ==========================
-# UPDATE SERVER
+# FIND SERVER BLOCK
 # ==========================
-echo "📦 Updating packages..."
-apt update -y
+NGINX_CONF=$(grep -R "server_name.*$PUBLIC_IP" /etc/nginx/sites-available -l | head -n 1)
+
+if [ -z "$NGINX_CONF" ]; then
+  echo "❌ No server block found using IP $PUBLIC_IP"
+  exit 1
+fi
+
+echo "✅ Found Nginx config: $NGINX_CONF"
 
 # ==========================
-# INSTALL NGINX
+# UPDATE SERVER_NAME
 # ==========================
-echo "🌐 Installing Nginx..."
-apt install nginx -y
-systemctl enable nginx
-systemctl start nginx
+sed -i "s/server_name .*${PUBLIC_IP}.*/server_name ${DOMAIN};/" "$NGINX_CONF"
 
 # ==========================
-# ALLOW FIREWALL
+# TEST & RELOAD NGINX
 # ==========================
-if command -v ufw &> /dev/null; then
-  echo "🔥 Configuring UFW..."
-  ufw allow OpenSSH
-  ufw allow 'Nginx Full'
-  ufw --force enable
+nginx -t || exit 1
+systemctl reload nginx
+
+echo "🔄 Nginx updated: $PUBLIC_IP → $DOMAIN"
+
+# ==========================
+# INSTALL CERTBOT (IF NEEDED)
+# ==========================
+if ! command -v certbot &> /dev/null; then
+  echo "📦 Installing Certbot..."
+  apt update -y
+  apt install -y certbot python3-certbot-nginx
 fi
 
 # ==========================
-# INSTALL CERTBOT
+# APPLY SSL
 # ==========================
-echo "🔐 Installing Certbot..."
-apt install certbot python3-certbot-nginx -y
-
-# ==========================
-# OBTAIN SSL
-# ==========================
-echo "🔑 Requesting SSL certificate..."
 certbot --nginx \
   -d "$DOMAIN" \
   --non-interactive \
@@ -60,17 +61,9 @@ certbot --nginx \
 # ==========================
 # AUTO RENEW
 # ==========================
-echo "♻️ Setting up auto-renew..."
 systemctl enable certbot.timer
 systemctl start certbot.timer
 
-# ==========================
-# TEST RENEWAL
-# ==========================
-echo "🧪 Testing renewal..."
 certbot renew --dry-run
 
-# ==========================
-# DONE
-# ==========================
-echo "✅ SSL successfully installed for https://$DOMAIN"
+echo "✅ SSL successfully applied: https://$DOMAIN"
