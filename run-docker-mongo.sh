@@ -22,7 +22,7 @@ USE_PUBLIC_IP_FOR_REPLICA=false   # change to false if app+db on same EC2
 PUBLIC_IP=$(curl -s http://checkip.amazonaws.com)
 
 if [ "$USE_PUBLIC_IP_FOR_REPLICA" = false ]; then
-  REPLICA_HOST="localhost"
+  REPLICA_HOST="127.0.0.1"
   echo "Replica will use localhost"
 else
   REPLICA_HOST="$PUBLIC_IP"
