@@ -52,7 +52,6 @@ apt install certbot python3-certbot-nginx -y
 echo "🔑 Requesting SSL certificate..."
 certbot --nginx \
   -d "$DOMAIN" \
-  -d "www.$DOMAIN" \
   --non-interactive \
   --agree-tos \
   -m "$EMAIL" \
